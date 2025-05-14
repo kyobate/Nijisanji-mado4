@@ -1,0 +1,66 @@
+<script>
+    let playerCount = 0;
+    const players = {};
+
+    // 配信者リスト（チャンネルID）
+    const vtubers = {
+      "配信者A": "チャンネルID1",
+      "配信者B": "チャンネルID2",
+      "配信者C": "チャンネルID3"
+    };
+
+    const apiKey = "AIzaSyCAmqSIpleN4qSr62IASDADpfR2G-sXCv0"; // ここに取得したAPIキーをセット！
+
+    function addPlayer() {
+      playerCount++;
+      const playerId = 'player' + playerCount;
+
+      const container = document.createElement('div');
+      container.className = 'player-container';
+      container.innerHTML = `
+        <select onchange="changeVtuber('${playerId}', this.value)">
+          <option value="">配信者を選択</option>
+          ${Object.entries(vtubers).map(([name, id]) => 
+            `<option value="${id}">${name}</option>`
+          ).join('')}
+        </select>
+        <div id="${playerId}" style="width:480px; height:270px;"></div>
+      `;
+
+      document.getElementById('players').appendChild(container);
+
+      players[playerId] = new YT.Player(playerId, {
+        height: '270',
+        width: '480',
+        videoId: '',
+        events: {
+          'onReady': (event) => {
+            console.log(`${playerId} ready`);
+          }
+        }
+      });
+    }
+
+    // 選択されたときにチャンネルIDからライブ配信の動画IDを探して再生
+    function changeVtuber(playerId, channelId) {
+      if (!channelId) return;
+
+      fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.items && data.items.length > 0) {
+            const videoId = data.items[0].id.videoId;
+            players[playerId].loadVideoById(videoId);
+          } else {
+            alert('現在この配信者はライブを行っていません');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching live video:', error);
+        });
+    }
+
+    function onYouTubeIframeAPIReady() {
+      // 最初はプレイヤー作らない
+    }
+</script>
