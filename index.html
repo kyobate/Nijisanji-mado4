@@ -5,26 +5,59 @@
   <title>Vtuberマルチ配信ビューワー</title>
   <script src="https://www.youtube.com/iframe_api"></script>
   <style>
-    .player-container {
-      margin-bottom: 20px;
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1000px;
+      margin: auto;
     }
-    #addBtn {
-      margin: 20px 0;
+    .player-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .player-container select {
+      margin-bottom: 10px;
+    }
+    iframe {
+      border: none;
     }
   </style>
 </head>
 <body>
 
-  <h1>Vtuberマルチ配信ビューワー</h1>
+  <h1 style="text-align: center;">Vtuberマルチ配信ビューワー</h1>
 
-  <button id="addBtn" onclick="addPlayer()" disabled>プレイヤーを追加</button>
-
-  <div id="players"></div>
+  <div class="grid" id="players">
+    <div class="player-container">
+      <select onchange="changeVtuber('player1', this.value)">
+        <option value="">配信者を選択</option>
+      </select>
+      <div id="player1" style="width:480px; height:270px;"></div>
+    </div>
+    <div class="player-container">
+      <select onchange="changeVtuber('player2', this.value)">
+        <option value="">配信者を選択</option>
+      </select>
+      <div id="player2" style="width:480px; height:270px;"></div>
+    </div>
+    <div class="player-container">
+      <select onchange="changeVtuber('player3', this.value)">
+        <option value="">配信者を選択</option>
+      </select>
+      <div id="player3" style="width:480px; height:270px;"></div>
+    </div>
+    <div class="player-container">
+      <select onchange="changeVtuber('player4', this.value)">
+        <option value="">配信者を選択</option>
+      </select>
+      <div id="player4" style="width:480px; height:270px;"></div>
+    </div>
+  </div>
 
   <script>
-    let playerCount = 0;
     const players = {};
-
     const vtubers = {
       "壱百満天原サロメ": "UCgIfLpQvelloDi8IuRsHWZQ",
       "剣持刀也": "UCv1fFr156jc65EMiLbaLImw",
@@ -34,33 +67,15 @@
 
     const apiKey = "AIzaSyCAmqSIpleN4qSr62IASDADpfR2G-sXCv0";
 
-    function addPlayer() {
-      playerCount++;
-      const playerId = 'player' + playerCount;
-
-      const container = document.createElement('div');
-      container.className = 'player-container';
-      container.innerHTML = `
-        <select onchange="changeVtuber('${playerId}', this.value)">
-          <option value="">配信者を選択</option>
-          ${Object.entries(vtubers).map(([name, id]) =>
-            `<option value="${id}">${name}</option>`
-          ).join('')}
-        </select>
-        <div id="${playerId}" style="width:480px; height:270px;"></div>
-      `;
-
-      document.getElementById('players').appendChild(container);
-
-      players[playerId] = new YT.Player(playerId, {
-        height: '270',
-        width: '480',
-        videoId: '',
-        events: {
-          'onReady': () => {
-            console.log(`${playerId} is ready`);
-          }
-        }
+    function populateSelects() {
+      const selects = document.querySelectorAll('select');
+      selects.forEach(select => {
+        Object.entries(vtubers).forEach(([name, id]) => {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = name;
+          select.appendChild(option);
+        });
       });
     }
 
@@ -83,10 +98,22 @@
     }
 
     function onYouTubeIframeAPIReady() {
-      // APIが読み込まれたらボタンを使えるようにする
-      document.getElementById("addBtn").disabled = false;
-      console.log("YouTube Iframe API ready");
+      for (let i = 1; i <= 4; i++) {
+        const id = 'player' + i;
+        players[id] = new YT.Player(id, {
+          height: '270',
+          width: '480',
+          videoId: '',
+          events: {
+            'onReady': () => {
+              console.log(`${id} is ready`);
+            }
+          }
+        });
+      }
     }
+
+    populateSelects();
   </script>
 
 </body>
