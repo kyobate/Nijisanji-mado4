@@ -1,15 +1,32 @@
-<script>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Vtuberマルチ配信ビューワー</title>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <style>
+    .player-container {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Vtuberマルチ配信ビューワー</h1>
+
+  <button onclick="addPlayer()">プレイヤーを追加</button>
+
+  <div id="players"></div>
+
+  <script>
     let playerCount = 0;
     const players = {};
 
-    // 配信者リスト（チャンネルID）
-const vtubers = {
-  "宝鐘マリン": "UCCzUftO8KOVkV4wQG1vkUvg",
-  "兎田ぺこら": "UC1DCedRgGHBdm81E1llLhOQ",
-  "ホロライブ公式": "UCJFZiqLMntJufDCHc6bQixg"
-};
+    const vtubers = {
+      "配信者A": "UCxxxxxxxxxxxxxxxxx" // ←ここに実際のチャンネルIDを入れて！
+    };
 
-    const apiKey = "AIzaSyCAmqSIpleN4qSr62IASDADpfR2G-sXCv0"; // ここに取得したAPIキーをセット！
+    const apiKey = "あなたのAPIキー"; // ←ここに取得したキーを貼る！
 
     function addPlayer() {
       playerCount++;
@@ -20,7 +37,7 @@ const vtubers = {
       container.innerHTML = `
         <select onchange="changeVtuber('${playerId}', this.value)">
           <option value="">配信者を選択</option>
-          ${Object.entries(vtubers).map(([name, id]) => 
+          ${Object.entries(vtubers).map(([name, id]) =>
             `<option value="${id}">${name}</option>`
           ).join('')}
         </select>
@@ -34,14 +51,13 @@ const vtubers = {
         width: '480',
         videoId: '',
         events: {
-          'onReady': (event) => {
-            console.log(`${playerId} ready`);
+          'onReady': () => {
+            console.log(`${playerId} is ready`);
           }
         }
       });
     }
 
-    // 選択されたときにチャンネルIDからライブ配信の動画IDを探して再生
     function changeVtuber(playerId, channelId) {
       if (!channelId) return;
 
@@ -52,15 +68,18 @@ const vtubers = {
             const videoId = data.items[0].id.videoId;
             players[playerId].loadVideoById(videoId);
           } else {
-            alert('現在この配信者はライブを行っていません');
+            alert('現在この配信者はライブをしていません。');
           }
         })
         .catch(error => {
-          console.error('Error fetching live video:', error);
+          console.error('ライブ取得エラー:', error);
         });
     }
 
     function onYouTubeIframeAPIReady() {
-      // 最初はプレイヤー作らない
+      // YouTube APIが準備されたら使われる
     }
-</script>
+  </script>
+
+</body>
+</html>
