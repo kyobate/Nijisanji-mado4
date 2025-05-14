@@ -8,13 +8,16 @@
     .player-container {
       margin-bottom: 20px;
     }
+    #addBtn {
+      margin: 20px 0;
+    }
   </style>
 </head>
 <body>
 
   <h1>Vtuberマルチ配信ビューワー</h1>
 
-  <button onclick="addPlayer()">プレイヤーを追加</button>
+  <button id="addBtn" onclick="addPlayer()" disabled>プレイヤーを追加</button>
 
   <div id="players"></div>
 
@@ -23,10 +26,13 @@
     const players = {};
 
     const vtubers = {
-      "配信者A": "UCxxxxxxxxxxxxxxxxx" // ←ここに実際のチャンネルIDを入れて！
+      "壱百満天原サロメ": "UCgIfLpQvelloDi8IuRsHWZQ",
+      "剣持刀也": "UCv1fFr156jc65EMiLbaLImw",
+      "葛葉": "UCmvkTTWeNzyOi8Xc8QKO8Pg",
+      "月ノ美兎": "UC7fk0CB07ly8oSl0aqKkqFg"
     };
 
-    const apiKey = "あなたのAPIキー"; // ←ここに取得したキーを貼る！
+    const apiKey = "AIzaSyCAmqSIpleN4qSr62IASDADpfR2G-sXCv0";
 
     function addPlayer() {
       playerCount++;
@@ -77,7 +83,9 @@
     }
 
     function onYouTubeIframeAPIReady() {
-      // YouTube APIが準備されたら使われる
+      // APIが読み込まれたらボタンを使えるようにする
+      document.getElementById("addBtn").disabled = false;
+      console.log("YouTube Iframe API ready");
     }
   </script>
 
